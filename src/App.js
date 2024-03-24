@@ -1,63 +1,31 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import Header from "./Components/Header";
-import Body from "./Components/Body";
-import Contact from "./Components/Contact";
-import Error from "./Components/Error";
-import Cart from "./Components/Cart";
-import RestaurantDetail from "./Components/RestaurantDetail";
-import UserContext from "./utils/userContext";
+import { QueryClient, QueryClientProvider } from "react-query";
 import appStore from "./utils/appStore";
 import { Provider } from "react-redux";
+import AuthInitialize from "./AuthInitialize";
+import dayjs from "dayjs";
+import timezone from "dayjs/plugin/timezone"
+import utc from 'dayjs/plugin/utc'
+dayjs.extend(timezone);
+dayjs.extend(utc)
 
-const About = lazy(() => import("./Components/About"));
+
 
 const App = () => {
+  console.log("APP RENDERED");
+  
+  const queryClient = new QueryClient();
   return (
     <div>
-      <Provider store={appStore}>
-        <UserContext.Provider value={{ loggedInUser: "Shashwat" }}>
-          <Header />
-          <Outlet />
-        </UserContext.Provider>
-      </Provider>
+      <QueryClientProvider client={queryClient}>
+        <Provider store={appStore}>
+          <AuthInitialize />
+        </Provider>
+      </QueryClientProvider>
     </div>
   );
 };
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    errorElement: <Error />,
-    children: [
-      {
-        path: "/",
-        element: <Body />,
-      },
-      {
-        path: "/contact",
-        element: <Contact />,
-      },
-      {
-        path: "/about",
-        element: (
-          <Suspense fallback={<h2>Loading...</h2>}>
-            <About />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/cart",
-        element: <Cart />,
-      },
-      {
-        path: "/restaurant/:resId",
-        element: <RestaurantDetail />,
-      },
-    ],
-  },
-]);
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<RouterProvider router={router} />);
+root.render(<App />);

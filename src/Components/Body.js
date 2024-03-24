@@ -28,6 +28,7 @@ const Body = () => {
   if(online === false) {
     return <h1>Looks like your internet is not working.</h1>
   }
+  
   return (
     <div className="body mx-4">
       <div className="search py-4 ">

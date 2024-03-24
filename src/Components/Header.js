@@ -1,12 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LOGO_URL } from "../utils/constants";
-import { useContext } from "react";
-import UserContext from "../utils/userContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { updateAuth } from "../utils/authSlice";
 const Header = () => {
-  const { loggedInUser } = useContext(UserContext);
   const cart = useSelector((store) => store.cart.items)
-  console.log("header", cart);
+  const auth = useSelector((store) => store.auth.token);
+  const dispatch = useDispatch();
+  const handleLogout = () => {
+    if(Object.keys(auth).length > 0 ) {
+      localStorage.removeItem("token");
+      dispatch(updateAuth({}))
+    }
+  }
+  console.log("Header")
   return (
     <div className="flex justify-between shadow-md mb-2 ">
       <div className="header-logo">
@@ -28,8 +34,8 @@ const Header = () => {
           <li>
             <Link to="/cart">Cart ({cart.length} items)</Link>
           </li>
-          <li>{loggedInUser}</li>
         </ul>
+        <button className="mx-4 bg-orange-500 text-white rounded py-2 px-4 font-bold" onClick={handleLogout}>{Object.keys(auth).length > 0 ? "Logout" : "Login" }</button>
       </div>
     </div>
   );
